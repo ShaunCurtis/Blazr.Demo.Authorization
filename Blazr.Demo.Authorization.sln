@@ -1,0 +1,73 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.Demo.Authorization.Config", "Blazr.Demo.Authorization\Blazr.Demo.Authorization.Config\Blazr.Demo.Authorization.Config.csproj", "{54D1C291-9C66-443F-90E1-FAD02FD199A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.Demo.Authorization.Controllers", "Blazr.Demo.Authorization\Blazr.Demo.Authorization.Controllers\Blazr.Demo.Authorization.Controllers.csproj", "{AD0BDD65-7E54-4EB5-BE1E-08751A4312D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.Demo.Authorization.Core", "Blazr.Demo.Authorization\Blazr.Demo.Authorization.Core\Blazr.Demo.Authorization.Core.csproj", "{436BF25E-AACE-4577-B9D2-480170165CF0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.Demo.Authorization.Data", "Blazr.Demo.Authorization\Blazr.Demo.Authorization.Data\Blazr.Demo.Authorization.Data.csproj", "{25ED655A-E198-47E7-B81F-1B0C0B8BA139}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.Demo.Authorization.UI", "Blazr.Demo.Authorization\Blazr.Demo.Authorization.UI\Blazr.Demo.Authorization.UI.csproj", "{B46A3F5F-144E-4806-B494-3A2414F15CDC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.Demo.Authorization.Server.Web", "Blazr.Demo.Authorization\Blazr.Demo.Authorization.Server.Web\Blazr.Demo.Authorization.Server.Web.csproj", "{25477D18-D1CF-4FA1-83B0-257F49EFAC18}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.Demo.Authorization.WASM", "Blazr.Demo.Authorization\Blazr.Demo.Authorization.WASM\Blazr.Demo.Authorization.WASM.csproj", "{D70423F0-DDE4-4056-9DD8-639C8858859B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.Demo.Authorization.WASM.Web", "Blazr.Demo.Authorization\Blazr.Demo.Authorization.WASM.Web\Blazr.Demo.Authorization.WASM.Web.csproj", "{5C969508-FC4B-4B26-A70B-FDE1910128A1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazr.Demo.Authorization.Tests", "Blazr.Demo.Authorization\Blazr.Demo.Authorization.Tests\Blazr.Demo.Authorization.Tests.csproj", "{B11D313A-81F8-4849-AFF2-1F48DCB433A9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{54D1C291-9C66-443F-90E1-FAD02FD199A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54D1C291-9C66-443F-90E1-FAD02FD199A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54D1C291-9C66-443F-90E1-FAD02FD199A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54D1C291-9C66-443F-90E1-FAD02FD199A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD0BDD65-7E54-4EB5-BE1E-08751A4312D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD0BDD65-7E54-4EB5-BE1E-08751A4312D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD0BDD65-7E54-4EB5-BE1E-08751A4312D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD0BDD65-7E54-4EB5-BE1E-08751A4312D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{436BF25E-AACE-4577-B9D2-480170165CF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{436BF25E-AACE-4577-B9D2-480170165CF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{436BF25E-AACE-4577-B9D2-480170165CF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{436BF25E-AACE-4577-B9D2-480170165CF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25ED655A-E198-47E7-B81F-1B0C0B8BA139}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25ED655A-E198-47E7-B81F-1B0C0B8BA139}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25ED655A-E198-47E7-B81F-1B0C0B8BA139}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25ED655A-E198-47E7-B81F-1B0C0B8BA139}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B46A3F5F-144E-4806-B494-3A2414F15CDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B46A3F5F-144E-4806-B494-3A2414F15CDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B46A3F5F-144E-4806-B494-3A2414F15CDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B46A3F5F-144E-4806-B494-3A2414F15CDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25477D18-D1CF-4FA1-83B0-257F49EFAC18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25477D18-D1CF-4FA1-83B0-257F49EFAC18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25477D18-D1CF-4FA1-83B0-257F49EFAC18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25477D18-D1CF-4FA1-83B0-257F49EFAC18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D70423F0-DDE4-4056-9DD8-639C8858859B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D70423F0-DDE4-4056-9DD8-639C8858859B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D70423F0-DDE4-4056-9DD8-639C8858859B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D70423F0-DDE4-4056-9DD8-639C8858859B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C969508-FC4B-4B26-A70B-FDE1910128A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C969508-FC4B-4B26-A70B-FDE1910128A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C969508-FC4B-4B26-A70B-FDE1910128A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C969508-FC4B-4B26-A70B-FDE1910128A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B11D313A-81F8-4849-AFF2-1F48DCB433A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B11D313A-81F8-4849-AFF2-1F48DCB433A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B11D313A-81F8-4849-AFF2-1F48DCB433A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B11D313A-81F8-4849-AFF2-1F48DCB433A9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {743E89FC-94D6-46A5-8804-5B79C2A7CC21}
+	EndGlobalSection
+EndGlobal
