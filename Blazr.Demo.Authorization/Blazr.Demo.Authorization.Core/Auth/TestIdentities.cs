@@ -1,14 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿/// ============================================================
+/// Author: Shaun Curtis, Cold Elm Coders
+/// License: Use And Donate
+/// If you use it, donate something to a charity somewhere
+/// ============================================================
+
 
 namespace Blazr.Demo.Authorization.Core;
 
 public static class TestIdentities
 {
     public const string Provider = "Dumb Provider";
-    
+
     public static ClaimsIdentity GetIdentity(string userName)
         => identities.FirstOrDefault(item => item.Name!.Equals(userName))
             ?? new ClaimsIdentity();

@@ -11,8 +11,4 @@
 	  <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Auth\" />
-  </ItemGroup>
-
 </Project>
