@@ -9,7 +9,5 @@ namespace Blazr.Demo.Authorization.Core;
 public record AppAuthFields
 {
     public Guid OwnerId { get; init; }
-    
-    public Guid AssigneeId { get; init; }
 }
 

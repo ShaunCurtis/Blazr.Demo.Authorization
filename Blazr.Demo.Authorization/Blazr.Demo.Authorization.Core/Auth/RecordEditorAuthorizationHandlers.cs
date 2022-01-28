@@ -8,26 +8,25 @@ namespace Blazr.Demo.Authorization.Core;
 
 public class RecordEditorAuthorizationRequirement : IAuthorizationRequirement { }
 
-public class RecordOwnerAuthorizationHandler : AuthorizationHandler<RecordEditorAuthorizationRequirement, object>
+public class RecordOwnerEditorAuthorizationHandler : AuthorizationHandler<RecordEditorAuthorizationRequirement, AppAuthFields>
 {
-    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, RecordEditorAuthorizationRequirement requirement, object data)
+    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, RecordEditorAuthorizationRequirement requirement, AppAuthFields data)
     {
         var entityId = context.User.GetIdentityId();
-        if (data is not null && data is AppAuthFields)
+        if (data is not null)
         {
-            var appFields = data as AppAuthFields;
-            if (entityId != Guid.Empty && entityId == appFields!.OwnerId)
+            if (entityId != Guid.Empty && entityId == data!.OwnerId)
                 context.Succeed(requirement);
         }
         return Task.CompletedTask;
     }
 }
 
-public class RecordEditorAuthorizationHandler : AuthorizationHandler<RecordEditorAuthorizationRequirement, object>
+public class RecordEditorAuthorizationHandler : AuthorizationHandler<RecordEditorAuthorizationRequirement, AppAuthFields>
 {
-    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, RecordEditorAuthorizationRequirement requirement, object data)
+    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, RecordEditorAuthorizationRequirement requirement, AppAuthFields data)
     {
-        if (context.User.IsInRole(StandardPolicies.Admin))
+        if (context.User.IsInRole(AppPolicies.UserRole) || context.User.IsInRole(AppPolicies.AdminRole))
             context.Succeed(requirement);
 
         return Task.CompletedTask;

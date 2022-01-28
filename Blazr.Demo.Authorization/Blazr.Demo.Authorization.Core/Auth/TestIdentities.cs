@@ -4,7 +4,6 @@
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
 
-
 namespace Blazr.Demo.Authorization.Core;
 
 public static class TestIdentities
@@ -56,7 +55,7 @@ public static class TestIdentities
         => new TestIdentity
         {
             Id = new Guid("10000000-0000-0000-0000-100000000002"),
-            Name = "User21",
+            Name = "User-2",
             Role = "UserRole"
         };
 

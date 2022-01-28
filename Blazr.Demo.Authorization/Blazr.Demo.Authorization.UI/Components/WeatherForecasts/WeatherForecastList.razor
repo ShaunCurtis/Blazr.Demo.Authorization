@@ -7,44 +7,79 @@
 }
 else
 {
-        <table class="table">
-            <thead>
+    <div class="col-12 text-end">
+        <AuthorizeButton Policy=@AppPolicies.IsVisitor class="btn btn-success" @onclick="AddRecord">Add Record</AuthorizeButton>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Temp. (C)</th>
+                <th>Temp. (F)</th>
+                <th>Summary</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in this.ViewService.Records!)
+            {
                 <tr>
-                    <th>Date</th>
-                    <th>Temp. (C)</th>
-                    <th>Temp. (F)</th>
-                    <th>Summary</th>
-                    <th>Actions</th>
+                    <td>@forecast.Date.ToShortDateString()</td>
+                    <td>@forecast.TemperatureC</td>
+                    <td>@forecast.TemperatureF</td>
+                    <td>@forecast.Summary</td>
+                    <td class="text-end">
+                        <AuthorizeRecordButton Policy=@AppPolicies.IsManagerPolicy AuthFields="this.GetAuthFields(forecast)" type="button" class="btn-sm btn-danger" ClickEvent="() => this.DeleteRecord(forecast.Id)">Delete</AuthorizeRecordButton>
+                        <AuthorizeRecordButton Policy=@AppPolicies.IsEditorPolicy AuthFields="this.GetAuthFields(forecast)" type="button" class="btn-sm btn-primary" ClickEvent="() => this.EditRecord(forecast.Id)">Edit</AuthorizeRecordButton>
+                        <AuthorizeRecordButton Policy=@AppPolicies.IsViewerPolicy AuthFields="this.GetAuthFields(forecast)" type="button" class="btn-sm btn-secondary" ClickEvent="() => this.ViewRecord(forecast.Id)">View</AuthorizeRecordButton>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach (var forecast in this._viewService.Records)
-                {
-                    <tr>
-                        <td>@forecast.Date.ToShortDateString()</td>
-                        <td>@forecast.TemperatureC</td>
-                        <td>@forecast.TemperatureF</td>
-                        <td>@forecast.Summary</td>
-                        <td><button class="btn btn-danger" @onclick="() => DeleteRecord(forecast.Id)">Delete</button></td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+            }
+        </tbody>
+    </table>
+}
+@if (isMessage)
+{
+    <div class="m-2 p-2 bg-warning">
+        @this.ViewService.Message
+    </div>
 }
 
 @code {
     [Inject] private WeatherForecastViewService? _viewService { get; set; }
+    private WeatherForecastViewService ViewService => _viewService!;
 
-    private bool isLoading => _viewService!.Records is null;
+    private bool isLoading => this.ViewService.Records is null;
+    private bool isMessage => !String.IsNullOrWhiteSpace(this.ViewService.Message);
 
     protected override void OnInitialized()
-        => this._viewService!.ListChanged += this.OnListChanged;
+        => this.ViewService.ListChanged += this.OnListChanged;
 
     private async Task DeleteRecord(Guid Id)
-        => await this._viewService!.DeleteRecord(Id);
+        => await this.ViewService.DeleteRecord(Id);
+
+    private void ViewRecord(Guid Id) { }
+
+    private void EditRecord(Guid Id) { }
+
+    private async Task AddRecord()
+        => await this.ViewService.AddRecord(
+        new WeatherForecast
+            {
+                Date = DateTime.Now,
+                Id = Guid.NewGuid(),
+                Summary = "Balmy",
+                TemperatureC = 14
+            });
+
 
     private void OnListChanged(object? sender, EventArgs e)
         => this.InvokeAsync(this.StateHasChanged);
+
+    protected AppAuthFields GetAuthFields(WeatherForecast record)
+        => new AppAuthFields { OwnerId = record.OwnerId };
+
 
     public void Dispose()
         => this._viewService!.ListChanged -= this.OnListChanged;

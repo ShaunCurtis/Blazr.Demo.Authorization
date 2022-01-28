@@ -1,9 +1,0 @@
-﻿global using Blazr.Demo.Authorization.Core;
-global using Blazr.Demo.Authorization.Data;
-global using Blazr.Demo.Authorization.UI;
-global using Bunit;
-global using Moq;
-global using System;
-global using System.Collections.Generic;
-global using System.Threading.Tasks;
-global using Xunit;

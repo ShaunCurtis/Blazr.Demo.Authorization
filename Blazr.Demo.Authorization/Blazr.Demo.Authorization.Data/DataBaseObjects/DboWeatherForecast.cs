@@ -13,8 +13,6 @@ internal record DboWeatherForecast
 
     public Guid OwnerId { get; init; }
 
-    public Guid AssigneeId { get; init; }
-
     public DateTime Date { get; init; }
 
     public int TemperatureC { get; init; }
@@ -26,7 +24,6 @@ internal record DboWeatherForecast
         {
             Id = this.Id,
             OwnerId = this.OwnerId,
-            AssigneeId = this.AssigneeId,
             Date = this.Date,
             TemperatureC = this.TemperatureC,
             Summary = this.Summary
@@ -37,7 +34,6 @@ internal record DboWeatherForecast
         {
             Id = record.Id,
             OwnerId = record.OwnerId,
-            AssigneeId = record.AssigneeId,
             Date = record.Date,
             TemperatureC = record.TemperatureC,
             Summary = record.Summary

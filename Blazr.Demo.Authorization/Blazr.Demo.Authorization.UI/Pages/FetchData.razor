@@ -4,38 +4,26 @@
 
 <WeatherForecastListHeader/>
 
-<div class="col-12 text-end">
-    <button class="btn btn-success" @onclick="AddRecord">Add Record</button>
-</div>
-
 <WeatherForecastList />
+
 @code {
 
-    [Inject] private WeatherForecastViewService? _viewService { get; set; }
+    [Inject] private WeatherForecastViewService? viewService { get; set; }
+    private WeatherForecastViewService ViewService => viewService!;
 
     protected async override void OnInitialized()
     {
-        await this._viewService!.GetForecastsAsync();
-        this._viewService.ListChanged += this.OnListChanged;
+        await this.ViewService.GetForecastsAsync();
+        this.ViewService.ListChanged += this.OnListChanged;
     }
 
     private async Task LoadRecords(int page)
-        => await this._viewService!.GetForecastsAsync();
-
-    private async Task AddRecord()
-    => await this._viewService!.AddRecord(
-        new WeatherForecast
-            {
-                Date = DateTime.Now,
-                Id = Guid.NewGuid(),
-                Summary = "Balmy",
-                TemperatureC = 14
-            });
+        => await this.ViewService.GetForecastsAsync();
 
     private void OnListChanged(object? sender, EventArgs e)
         => this.InvokeAsync(this.StateHasChanged);
 
     public void Dispose()
-        => this._viewService!.ListChanged -= this.OnListChanged;
+        => this.ViewService.ListChanged -= this.OnListChanged;
 
 }

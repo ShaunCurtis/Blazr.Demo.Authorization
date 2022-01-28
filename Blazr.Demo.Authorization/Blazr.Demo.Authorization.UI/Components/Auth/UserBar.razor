@@ -14,7 +14,7 @@
         {
             @if (value == _currentUserName)
             {
-                 <option value="@value" selected>@value</option>
+                <option value="@value" selected>@value</option>
             }
             else
             {
@@ -40,7 +40,7 @@
     private Task<AuthenticationState> AuthTask => authTask!;
 
     [Inject] private AuthenticationStateProvider? authState { get; set; }
-    private DumbAuthenticationStateProvider AuthState => (DumbAuthenticationStateProvider)authState!;
+    private VerySimpleAuthenticationStateProvider AuthState => (VerySimpleAuthenticationStateProvider)authState!;
 
     private ClaimsPrincipal user = new ClaimsPrincipal();
     private string _currentUserName = "None";
@@ -53,9 +53,7 @@
     }
 
     private async Task ChangeUser(ChangeEventArgs e)
-    {
-        await AuthState.ChangeIdentityAsync(e.Value.ToString() ?? string.Empty);
-    }
+        => await AuthState.ChangeIdentityAsync(e.Value?.ToString() ?? string.Empty);
 
     private async void OnUserChanged(Task<AuthenticationState> state)
         => await this.GetUser(state);

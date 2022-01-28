@@ -12,8 +12,6 @@ public record WeatherForecast
 
     public Guid OwnerId { get; init; }
 
-    public Guid AssigneeId { get; init; }
-
     public DateTime Date { get; init; }
 
     public int TemperatureC { get; init; }

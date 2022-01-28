@@ -4,7 +4,13 @@
 /// If you use it, donate something to a charity somewhere
 /// ============================================================
 
-using Blazr.Demo.Authorization.Config;
+global using Blazr.Demo.Authorization.Core;
+global using Blazr.Demo.Authorization.Data;
+
+global using Microsoft.AspNetCore.Components.Authorization;
+global using Microsoft.AspNetCore.Authorization;
+global using Microsoft.Extensions.DependencyInjection;
+using Blazr.Demo.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 

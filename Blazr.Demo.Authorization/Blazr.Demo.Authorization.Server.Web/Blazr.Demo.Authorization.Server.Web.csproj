@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Blazr.Demo.Authorization.Config\Blazr.Demo.Authorization.Config.csproj" />
     <ProjectReference Include="..\Blazr.Demo.Authorization.Core\Blazr.Demo.Authorization.Core.csproj" />
     <ProjectReference Include="..\Blazr.Demo.Authorization.Data\Blazr.Demo.Authorization.Data.csproj" />
     <ProjectReference Include="..\Blazr.Demo.Authorization.UI\Blazr.Demo.Authorization.UI.csproj" />
