@@ -12,17 +12,22 @@ public static class TestIdentities
     public const string Provider = "Dumb Provider";
 
     public static ClaimsIdentity GetIdentity(string userName)
-        => identities.FirstOrDefault(item => item.Name!.Equals(userName))
-            ?? new ClaimsIdentity();
+    {
+        var identity = identities.FirstOrDefault(item => item.Name.Equals(userName, StringComparison.OrdinalIgnoreCase));
+        if (identity == null)
+            return new ClaimsIdentity();
 
-    private static List<ClaimsIdentity> identities = new List<ClaimsIdentity>()
+        return new ClaimsIdentity(identity.Claims, Provider);
+    }
+
+    private static List<TestIdentity> identities = new List<TestIdentity>()
         {
-            new ClaimsIdentity(Visitor1Claims, Provider),
-            new ClaimsIdentity(Visitor2Claims, Provider),
-            new ClaimsIdentity(User1Claims, Provider),
-            new ClaimsIdentity(User2Claims, Provider),
-            new ClaimsIdentity(Admin1Claims, Provider),
-            new ClaimsIdentity(Admin2Claims, Provider),
+            Visitor1Identity, 
+            Visitor2Identity, 
+            User1Identity, 
+            User2Identity, 
+            Admin1Identity, 
+            Admin2Identity
         };
 
     public static List<string> GetTestIdentities()
@@ -32,43 +37,75 @@ public static class TestIdentities
         return list;
     }
 
-    public static Claim[] User1Claims
-        => new[]{
-            new Claim(ClaimTypes.Sid, "10000000-0000-0000-0000-100000000001"),
-            new Claim(ClaimTypes.Name, "User1"),
-            new Claim(ClaimTypes.Role, "UserRole")
-    };
-    public static Claim[] User2Claims
-        => new[]{
-            new Claim(ClaimTypes.Sid, "10000000-0000-0000-0000-10000000002"),
-            new Claim(ClaimTypes.Name, "User2"),
-            new Claim(ClaimTypes.Role, "UserRole")
-    };
+    public static Dictionary<Guid, string> TestIdentitiesDictionary()
+    {
+        var list = new Dictionary<Guid, string>();
+        identities.ForEach(identity => list.Add(identity.Id, identity.Name));
+        return list;
+    }
 
-    public static Claim[] Visitor1Claims
-        => new[]{
-            new Claim(ClaimTypes.Sid, "10000000-0000-0000-0000-200000000001"),
-            new Claim(ClaimTypes.Name, "Visitor1"),
-            new Claim(ClaimTypes.Role, "VisitorRole")
-    };
-    public static Claim[] Visitor2Claims
-        => new[]{
-            new Claim(ClaimTypes.Sid, "10000000-0000-0000-0000-200000000002"),
-            new Claim(ClaimTypes.Name, "Visitor2"),
-            new Claim(ClaimTypes.Role, "VisitorRole")
-    };
+    public static TestIdentity User1Identity
+        => new TestIdentity
+        {
+            Id = new Guid("10000000-0000-0000-0000-100000000001"),
+            Name = "User-1",
+            Role = "UserRole"
+        };
 
-    public static Claim[] Admin1Claims
+    public static TestIdentity User2Identity
+        => new TestIdentity
+        {
+            Id = new Guid("10000000-0000-0000-0000-100000000002"),
+            Name = "User21",
+            Role = "UserRole"
+        };
+
+    public static TestIdentity Visitor1Identity
+        => new TestIdentity
+        {
+            Id = new Guid("10000000-0000-0000-0000-200000000001"),
+            Name = "Visitor-1",
+            Role = "VisitorRole"
+        };
+
+    public static TestIdentity Visitor2Identity
+        => new TestIdentity
+        {
+            Id = new Guid("10000000-0000-0000-0000-200000000002"),
+            Name = "Visitor-2",
+            Role = "VisitorRole"
+        };
+
+    public static TestIdentity Admin1Identity
+        => new TestIdentity
+        {
+            Id = new Guid("10000000-0000-0000-0000-300000000001"),
+            Name = "Admin-1",
+            Role = "AdminRole"
+        };
+
+    public static TestIdentity Admin2Identity
+        => new TestIdentity
+        {
+            Id = new Guid("10000000-0000-0000-0000-300000000002"),
+            Name = "Admin-2",
+            Role = "AdminRole"
+        };
+}
+
+public record TestIdentity
+{
+    public string Name { get; set; } = string.Empty;
+
+    public Guid Id { get; set; } = Guid.Empty;
+
+    public string Role { get; set; } = string.Empty;
+
+    public Claim[] Claims
         => new[]{
-            new Claim(ClaimTypes.Sid, "10000000-0000-0000-0000-300000000001"),
-            new Claim(ClaimTypes.Name, "Admin1"),
-            new Claim(ClaimTypes.Role, "AdminRole")
-    };
-    public static Claim[] Admin2Claims
-        => new[]{
-            new Claim(ClaimTypes.Sid, "10000000-0000-0000-0000-300000000002"),
-            new Claim(ClaimTypes.Name, "Admin2"),
-            new Claim(ClaimTypes.Role, "AdminRole")
+            new Claim(ClaimTypes.Sid, this.Id.ToString()),
+            new Claim(ClaimTypes.Name, this.Name),
+            new Claim(ClaimTypes.Role, this.Role)
     };
 
 }

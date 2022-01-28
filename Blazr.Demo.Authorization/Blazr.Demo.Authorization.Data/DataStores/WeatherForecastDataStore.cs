@@ -21,24 +21,25 @@ public class WeatherForecastDataStore
         =>
         _records = GetForecasts();
 
-    private List<DboWeatherForecast> GetForecasts()
-    {
-        var list = new List<DboWeatherForecast>();
-        var rng = new Random();
-        for (var i = 1; i <= _recordsToGet; i++)
+        private List<DboWeatherForecast> GetForecasts()
         {
-            var c = rng.Next(1, 3);
-            list.Add(new DboWeatherForecast
+            var list = new List<DboWeatherForecast>();
+            var rng = new Random();
+            for (var i = 1; i <= _recordsToGet; i++)
             {
-                Id = Guid.NewGuid(),
-                OwnerId = new Guid($"10000000-0000-0000-0000-20000000000{c}"),
-                Date = DateTime.Now.AddDays(i),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            });
+                var c = rng.Next(1, 3);
+                list.Add(new DboWeatherForecast
+                {
+                    Id = Guid.NewGuid(),
+                    OwnerId = new Guid($"10000000-0000-0000-0000-20000000000{c}"),
+                    AssigneeId = new Guid($"10000000-0000-0000-0000-10000000000{c}"),
+                    Date = DateTime.Now.AddDays(i),
+                    TemperatureC = rng.Next(-20, 55),
+                    Summary = Summaries[rng.Next(Summaries.Length)]
+                });
+            }
+            return list;
         }
-        return list;
-    }
 
     public ValueTask<bool> AddForecastAsync(WeatherForecast weatherForecast)
     {
@@ -83,16 +84,24 @@ public class WeatherForecastDataStore
         list.ForEach(item => _records.Add(DboWeatherForecast.FromDto(item)));
     }
 
-    public static List<WeatherForecast> CreateTestForecasts(int count)
-    {
-        var rng = new Random();
-        return Enumerable.Range(1, count).Select(index => new WeatherForecast
+        public static List<WeatherForecast> CreateTestForecasts(int count)
         {
-            Id = Guid.NewGuid(),
-            Date = DateTime.Now.AddDays(index),
-            TemperatureC = rng.Next(-20, 55),
-            Summary = Summaries[rng.Next(Summaries.Length)]
-        }).ToList();
+            var list = new List<WeatherForecast>();
+            var rng = new Random();
+            for (var i = 1; i <= count; i++)
+            {
+                var c = rng.Next(1, 3);
+                list.Add(new WeatherForecast
+                {
+                    Id = Guid.NewGuid(),
+                    OwnerId = new Guid($"10000000-0000-0000-0000-20000000000{c}"),
+                    AssigneeId = new Guid($"10000000-0000-0000-0000-10000000000{c}"),
+                    Date = DateTime.Now.AddDays(i),
+                    TemperatureC = rng.Next(-20, 55),
+                    Summary = Summaries[rng.Next(Summaries.Length)]
+                });
+            }
+            return list;
+        }
     }
 }
-
