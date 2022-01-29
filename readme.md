@@ -4,7 +4,7 @@ In many applications, authorization needs to be more granular and complex that t
 
 ## Authentication and Ownership
 
-Before we start we need a simple authenticator to let us switch identities, and a field in each weather forecast to identify the owner.  You can see the details in the Appendix of this article.
+We need a simple authenticator to let us switch identities, and a field in each weather forecast to identify the owner.  You can see the details in the Appendix of this article.  A quick point on nomenclature: I use the term `Identity` rather than `user`. 
 
 The image below illustrates what we'll achieve.
 
@@ -12,44 +12,135 @@ The image below illustrates what we'll achieve.
 
 ## Authorization
 
-Before we delve into the detail, let's look at the result.
+Before delving into the detail, let's look at the end result.
 
-#### Anonymous
-
-When not logged in you can view the list, but that's all.
+An anonymous user can view the list, but that's all.
 
 ![App View](./images/Anonymous.png)
 
-#### User
-
-As user you can edit or view any record, but not delete it.
+Users can edit or view any record, but not delete it.
 
 ![App View](./images/User.png)
 
-#### Admin
-
-As an Admin you can Edit/View/Delete.
+Admins you can Edit/View/Delete.
 
 ![App View](./images/Admin.png)
 
-#### Visitor
-
-As an Visitor you can View all the records, but only Edit/Delete your own.
+Visitors can View all the records, but only Edit/Delete your own.
 
 ![App View](./images/Visitor.png)
 
 To demonstrate using authorization in a service, the application checks that any user attempting to add a record is at least a user.  So even through the "Add Record" button shows when logged in as a visitor, they can't actual add a record in the backend services.
 
+![App View](./images/Visitor-Add.png)
+
+## Authorization Button
+
+I've built an `AuthorizeButton` component to encapsulate the button code.  There are two versions:
+
+`AuthorizeButton` requirs a policy.  This is the Add button at the top of the page.
+
+```html
+<AuthorizeButton Policy=@AppPolicies.IsVisitor class="btn btn-success" @onclick="AddRecord">Add Record</AuthorizeButton>
+```
+While `AuthorizeRecordButton` requires a policy and an `AppAuthFields` object built from a record.  This is thr Edit button that appears in each row and uses the row record to populate the `AppAuthFields` instance.
+
+```html
+<AuthorizeRecordButton Policy=@AppPolicies.IsEditorPolicy AuthFields="this.GetAuthFields(forecast)" type="button" class="btn-sm btn-primary" ClickEvent="() => this.EditRecord(forecast.Id)">Edit</AuthorizeRecordButton>
+```
+
+`AuthorizeButton` looks like this.  Much of the code is pretty standard component fare, so I'll concentrate on just the authorization bit.
+
+We check in `OnInitialized` to make sure we have a `AuthTask` cascade i.e. we have the upstream authentication and authorization configured.  If not then we throw an exception.
+
+`BuildRenderTree` calls `CheckPolicy()` to check if it should render the button.  `CheckPolicy` gets the authentication state and then calls `AuthorizeAsync` on the injected `AuthorizationService`, passing in the `IdentityPrincipal` that represents the user, a null for the resource object (we'll come to resource objects shortly), and the policy name to apply.  If the result is success then we display the button.
+
+We are coding the same behaviour as the generic authorize components in the specific button context.  
+
+```csharp
+var result = await this.AuthorizationService.AuthorizeAsync(state.User, null, Policy);
+```
+
+```csharp
+public class AuthorizeButton : ComponentBase
+{
+    [Parameter] public bool Show { get; set; } = true;
+    [Parameter] public bool Disabled { get; set; } = false;
+    [Parameter] public string Policy { get; set; } = String.Empty;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public EventCallback<MouseEventArgs> ClickEvent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IDictionary<string, object> SplatterAttributes { get; set; } = new Dictionary<string, object>();
+    [CascadingParameter] public Task<AuthenticationState>? AuthTask { get; set; }
+
+    [Inject] protected IAuthorizationService? _authorizationService { get; set; }
+    protected IAuthorizationService AuthorizationService => _authorizationService!;
+
+    protected CSSBuilder CssClass = new CSSBuilder("btn me-1");
+
+    protected override void OnInitialized()
+    {
+        if (AuthTask is null)
+            throw new Exception($"{this.GetType().FullName} must have access to cascading Paramater {nameof(AuthTask)}");
+    }
+
+    protected override async void BuildRenderTree(RenderTreeBuilder builder)
+    {
+        if (this.Show && await this.CheckPolicy())
+        {
+            CssClass.AddClassFromAttributes(SplatterAttributes);
+            builder.OpenElement(0, "button");
+            builder.AddMultipleAttributes(1, this.SplatterAttributes);
+            builder.AddAttribute(1, "class", CssClass.Build());
+
+            if (Disabled)
+                builder.AddAttribute(4, "disabled");
+
+            if (ClickEvent.HasDelegate)
+                builder.AddAttribute(5, "onclick", EventCallback.Factory.Create<MouseEventArgs>(this, ClickEvent));
+
+            builder.AddContent(6, ChildContent);
+            builder.CloseElement();
+        }
+    }
+
+    protected virtual async Task<bool> CheckPolicy()
+    {
+        var state = await AuthTask!;
+        var result = await this.AuthorizationService.AuthorizeAsync(state.User, null, Policy);
+        return result.Succeeded;
+    }
+}
+
+```
+
+`AuthorizeRecordButton` extends `AuthorizeButton` by passing an `AppAuthFields` obect to `AuthorizeAsync` as the resource object.  We'll see how the `AuthorizationService` uses this shortly.
+
+```csharp
+public class AuthorizeRecordButton : AuthorizeButton
+{
+    [Parameter] public object? AuthFields { get; set; }
+
+    protected override async Task<bool> CheckPolicy()
+    {
+        var state = await AuthTask!;
+        var result = await this.AuthorizationService.AuthorizeAsync(state.User, AuthFields, Policy);
+        return result.Succeeded;
+    }
+}
+```
 
 ### Policies
 
-`AuthorizationPolicy` objects are used to define authorization policies.  The `AuthorizationPolicyBuilder` class simnplifies creating authorization policies.
+Policies are defined as `AuthorizationPolicy` objects.  Policies are mapped to names when the `AuthorizationService` is instantiated.  The `AuthorizationService` maps the policy name we provide to an `AuthorizationPolicy` object.
 
-The Application definbes a static `AppPolicies` class to hold all the policy code.
+We build policies using an `AuthorizationPolicyBuilder`.
+
+The Application defines a static `AppPolicies` class to hold all the policy code.
 
 1. Defines a set of nomenclature constants for role and policy string names.
 2. Builds out a set of policies using the `AuthorizationPolicyBuilder`.
-3. Defines a dictionary of the defined application policies.
+3. Defines a dictionary of the defined application policies to load into `AuthorizationService`.
+4. Defines an `IServiceCollection` extension method for all the DI objects we need to load for our policies.
 
 ```csharp
 public static class StandardPolicies
@@ -66,7 +157,9 @@ public static class StandardPolicies
     public const string IsVisitor = "IsVisitor";
 ```
 
-Our basic Admin/User/Visitor policies that just check that an identity is logged in an in one or more roles.  These are our site based policies.  Note that for user to pass a policy they need to satisfy all the requirements (an AND in logic terms).
+Our basic Admin/User/Visitor policies that just check that an identity is logged in an in one or more roles.  These are our site based policies.
+
+Note that for user to pass a policy they must satisfy all the requirements (an AND in logic terms).
   
 ```csharp
     public static AuthorizationPolicy IsAdminAuthorizationPolicy
@@ -89,7 +182,7 @@ Our basic Admin/User/Visitor policies that just check that an identity is logged
 
 ```
 
-We now move on to our record based policies.  We add requirements, defined as an `IAuthorizationRequirement` list.  In our case we have a `RecordEditorAuthorizationRequirement` and a `RecordManagerAuthorizationRequirement`.  We'll look at these in more detail shortly.
+Next our record based policies.  We add requirements, defined as an `IAuthorizationRequirement` list.  In our case we have a `RecordEditorAuthorizationRequirement` and a `RecordManagerAuthorizationRequirement`.  We'll look at these in more detail shortly.
 
 ```csharp
 
@@ -111,7 +204,7 @@ We now move on to our record based policies.  We add requirements, defined as an
         .Build();
 ```
 
-We define a list of our requirements.  We'll use this to add all the policies to the Authorization Service.
+The `Policies` dictionary provides a convenient mechanism for defining and managing all the application policies that `AuthorizationService` needs to load.
 
 ```csharp
     public static Dictionary<string, AuthorizationPolicy> Policies
@@ -160,21 +253,20 @@ services.AddAuthorization(config =>
 
 ### IAuthorizationRequrements and IAuthorizationHandlers
 
-A class that implements `IAuthorizationRequirement` is an empty marker class.
-
-`IAuthorizationHandlers` implement `AuthorizationHandler` through inheritance from a base `AuthorizationHandler` class.  The base class takes two generics:
-
-1. `TRequirement` which is our empty `AuthorizationRequirement` class
-2. `TResource` which is the resource type we will using to get information from.  This could be a `WeatherForecast` record, but to make things a little more generic we will define a `AppAuthFields` class which we will populate from each record.
-
-For record editing we define a requirement:
+In the policies we defined `IAuthorizationRequirement` classes.  `RecordEditorAuthorizationRequirement` looks like this.  It's an empty class. `IAuthorizationRequirement` is also empty.
 
 ```csharp
 public class RecordEditorAuthorizationRequirement : IAuthorizationRequirement { }
-``` 
-And then an `AuthorizationHandler` where `TRequirement` is `RecordEditorAuthorizationRequirement` and `TResource` is `AppAuthFields`.
+```
 
-We implement `HandleRequirementAsync`
+`IAuthorizationHandlers` implement the interface through the  `AuthorizationHandler` base class.  The base class takes two generics:
+
+1. `TRequirement`, our empty `AuthorizationRequirement` class.
+2. `TResource`, the resource type we'll use.  This is the `resource` object we passed in `AuthorizationService.AuthorizeAsync`.this can be an object: we are using the `AppAuthFields` class which we  populate from a record.
+
+Our editor authorization handlers look like this. `TRequirement` is `RecordEditorAuthorizationRequirement` and `TResource` is `AppAuthFields`. `HandleRequirementAsync` is the method called to do the authorization.  
+
+The first handler gets the user's Id, checks it against the `OwnerId` provided in the `AppAuthFields` instance and sets  success or failure in the provided `AuthorizationHandlerContext` instance.
 
 ```csharp
 public class RecordOwnerEditorAuthorizationHandler : AuthorizationHandler<RecordEditorAuthorizationRequirement, AppAuthFields>
@@ -191,9 +283,31 @@ public class RecordOwnerEditorAuthorizationHandler : AuthorizationHandler<Record
     }
 }
 ```
+The second handler simply checks if the identity has the correct role.  We do this check here because a requrement is a logic OR.  Only one handler defined for a requirement needs return success for the requirement to return success. 
 
- 
+```csharp
+public class RecordEditorAuthorizationHandler : AuthorizationHandler<RecordEditorAuthorizationRequirement, AppAuthFields>
+{
+    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, RecordEditorAuthorizationRequirement requirement, AppAuthFields data)
+    {
+        if (context.User.IsInRole(AppPolicies.UserRole) || context.User.IsInRole(AppPolicies.AdminRole))
+            context.Succeed(requirement);
 
+        return Task.CompletedTask;
+    }
+}
+```
+
+### How does a policy work?
+
+The services container defines a set of IAuthorizationHandlers.  Each is "mapped" by it's `TRequirement` to a specific requirement class.  A policy defines one or more requirements, and is mapped to a name in the `AuthorizationService`.  
+
+So when we do this:
+
+```csharp
+var result = await this.AuthorizationService.AuthorizeAsync(state.User, AuthFields, Policy);
+```
+We are telling the authorization service to check the user against the policy with the following resource.  The service maps the policy name to an actual policy and calls the policy.  It gets all the `IAuthorizationHandler` instances in the services container and specifically any that handle the defined requirement.  It runs `HandleRequirementsAsync` on each.  As this is an OR operation it returns on the first success.  
 
 ## Authentication
 
