@@ -45,7 +45,6 @@ namespace Blazr.Demo.Authorization.Core
             }
             else
                 this.Message = "That Ain't Allowed!";
-
         }
 
         public async ValueTask DeleteRecord(Guid Id)

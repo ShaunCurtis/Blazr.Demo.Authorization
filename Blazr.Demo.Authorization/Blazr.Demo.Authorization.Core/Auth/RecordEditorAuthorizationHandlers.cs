@@ -13,11 +13,9 @@ public class RecordOwnerEditorAuthorizationHandler : AuthorizationHandler<Record
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, RecordEditorAuthorizationRequirement requirement, AppAuthFields data)
     {
         var entityId = context.User.GetIdentityId();
-        if (data is not null)
-        {
-            if (entityId != Guid.Empty && entityId == data!.OwnerId)
-                context.Succeed(requirement);
-        }
+        if (entityId != Guid.Empty && entityId == data.OwnerId)
+            context.Succeed(requirement);
+
         return Task.CompletedTask;
     }
 }

@@ -8,24 +8,21 @@ namespace Blazr.Demo.Authorization.Core;
 
 public class RecordManagerAuthorizationRequirement : IAuthorizationRequirement { }
 
-public class RecordOwnerManagerAuthorizationHandler : AuthorizationHandler<RecordManagerAuthorizationRequirement, object>
+public class RecordOwnerManagerAuthorizationHandler : AuthorizationHandler<RecordManagerAuthorizationRequirement, AppAuthFields>
 {
-    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, RecordManagerAuthorizationRequirement requirement, object data)
+    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, RecordManagerAuthorizationRequirement requirement, AppAuthFields data)
     {
         var entityId = context.User.GetIdentityId();
-        if (data is not null && data is AppAuthFields)
-        {
-            var appFields = data as AppAuthFields;
-            if (entityId != Guid.Empty && entityId == appFields!.OwnerId)
-                context.Succeed(requirement);
-        }
+        if (entityId != Guid.Empty && entityId == data.OwnerId)
+            context.Succeed(requirement);
+
         return Task.CompletedTask;
     }
 }
 
-public class RecordManagerAuthorizationHandler : AuthorizationHandler<RecordManagerAuthorizationRequirement, object>
+public class RecordManagerAuthorizationHandler : AuthorizationHandler<RecordManagerAuthorizationRequirement, AppAuthFields>
 {
-    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, RecordManagerAuthorizationRequirement requirement, object data)
+    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, RecordManagerAuthorizationRequirement requirement, AppAuthFields data)
     {
         if (context.User.IsInRole(AppPolicies.AdminRole))
             context.Succeed(requirement);
