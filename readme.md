@@ -1,6 +1,6 @@
 # Policy Based Authorization in Blazor
 
-Many applications need more granular and complex authorization that the canned examples in many demos.  This article shows:
+Many applications require more granular and complex authorization that the canned examples in many demos.  This article shows:
 
 1. How use and manage policy based authorization in an application.
 2. How to build and manage policies in static classes.
