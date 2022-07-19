@@ -14,6 +14,7 @@ public static class IServiceCollectionExtensions
         services.AddScoped<WeatherForecastViewService>();
 
         services.AddScoped<AuthenticationStateProvider, VerySimpleAuthenticationStateProvider>();
+        //services.AddScoped<AuthenticationStateProvider, DumbAuthenticationStateProvider>();
         services.AddAppPolicyServices();
         services.AddAuthorization(config =>
         {
