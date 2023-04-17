@@ -24,7 +24,7 @@ public class RecordEditorAuthorizationHandler : AuthorizationHandler<RecordEdito
 {
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, RecordEditorAuthorizationRequirement requirement, AppAuthFields data)
     {
-        if (context.User.IsInRole(AppPolicies.UserRole) || context.User.IsInRole(AppPolicies.AdminRole))
+        if (context.User.IsInRole(AuthRoles.UserRole) || context.User.IsInRole(AuthRoles.AdminRole))
             context.Succeed(requirement);
 
         return Task.CompletedTask;

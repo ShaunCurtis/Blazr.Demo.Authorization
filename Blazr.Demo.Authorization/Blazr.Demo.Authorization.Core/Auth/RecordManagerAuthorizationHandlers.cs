@@ -24,7 +24,7 @@ public class RecordManagerAuthorizationHandler : AuthorizationHandler<RecordMana
 {
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, RecordManagerAuthorizationRequirement requirement, AppAuthFields data)
     {
-        if (context.User.IsInRole(AppPolicies.AdminRole))
+        if (context.User.IsInRole(AuthRoles.AdminRole))
             context.Succeed(requirement);
 
         return Task.CompletedTask;

@@ -37,7 +37,7 @@ namespace Blazr.Demo.Authorization.Core
         {
             this.Message = string.Empty;
             var authstate = await this.AuthenticationStateProvider.GetAuthenticationStateAsync();
-            var result = await this.AuthorizationService.AuthorizeAsync(authstate.User, null, AppPolicies.IsUserPolicy);
+            var result = await this.AuthorizationService.AuthorizeAsync(authstate.User, null, AuthPolicyNames.IsUserPolicy);
             if (result.Succeeded)
             {
                 await weatherForecastDataBroker!.AddForecastAsync(record);

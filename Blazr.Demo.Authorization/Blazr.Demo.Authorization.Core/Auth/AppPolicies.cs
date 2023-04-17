@@ -7,35 +7,42 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Blazr.Demo.Authorization.Core;
 
-public static class AppPolicies
+public static class AuthRoles
 {
     public const string AdminRole = "AdminRole";
     public const string UserRole = "UserRole";
     public const string VisitorRole = "VisitorRole";
+}
 
+public static class AuthPolicyNames
+{
     public const string IsEditorPolicy = "IsEditorPolicy";
     public const string IsViewerPolicy = "IsViewerPolicy";
     public const string IsManagerPolicy = "IsManagerPolicy";
     public const string IsAdminPolicy = "IsAdminPolicy";
     public const string IsUserPolicy = "IsUserPolicy";
     public const string IsVisitor = "IsVisitor";
+    public const string IsAdminAreaPolicy = "IsAdminAreaPolicy";
+}
 
+public static class AppPolicies
+{
     public static AuthorizationPolicy IsAdminAuthorizationPolicy
         => new AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser()
-        .RequireRole(AdminRole)
+        .RequireRole(AuthRoles.AdminRole)
         .Build();
 
     public static AuthorizationPolicy IsUserAuthorizationPolicy
         => new AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser()
-        .RequireRole(AdminRole, UserRole)
+        .RequireRole(AuthRoles.AdminRole, AuthRoles.UserRole)
         .Build();
 
     public static AuthorizationPolicy IsVisitorAuthorizationPolicy
         => new AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser()
-        .RequireRole(AdminRole, UserRole, VisitorRole)
+        .RequireRole(AuthRoles.AdminRole, AuthRoles.UserRole, AuthRoles.VisitorRole)
         .Build();
 
     public static AuthorizationPolicy IsEditorAuthorizationPolicy
@@ -43,7 +50,7 @@ public static class AppPolicies
         .RequireAuthenticatedUser()
         .AddRequirements(new RecordEditorAuthorizationRequirement())
         .Build();
-    
+
     public static AuthorizationPolicy IsManagerAuthorizationPolicy
         => new AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser()
@@ -55,22 +62,22 @@ public static class AppPolicies
         .RequireAuthenticatedUser()
         .Build();
 
-    public static Dictionary<string, AuthorizationPolicy> Policies
+    public static AuthorizationPolicy IsAdminAreaAuthPolicy
+        => new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .AddRequirements(new AdminAreaAuthorizationRequirement())
+        .Build();
+
+    public static Dictionary<string, AuthorizationPolicy> Policies = new Dictionary<string, AuthorizationPolicy>()
     {
-        get
-        {
-            var policies = new Dictionary<string, AuthorizationPolicy>();
-
-            policies.Add(IsAdminPolicy, IsAdminAuthorizationPolicy);
-            policies.Add(IsUserPolicy, IsUserAuthorizationPolicy);
-            policies.Add(IsVisitor, IsVisitorAuthorizationPolicy);
-
-            policies.Add(IsManagerPolicy, IsManagerAuthorizationPolicy);
-            policies.Add(IsEditorPolicy, IsEditorAuthorizationPolicy);
-            policies.Add(IsViewerPolicy, IsViewerAuthorizationPolicy);
-            return policies;
-        }
-    }
+        { AuthPolicyNames.IsAdminPolicy, IsAdminAuthorizationPolicy },
+        { AuthPolicyNames.IsUserPolicy, IsUserAuthorizationPolicy},
+        { AuthPolicyNames.IsVisitor, IsVisitorAuthorizationPolicy},
+        { AuthPolicyNames.IsManagerPolicy, IsManagerAuthorizationPolicy},
+        { AuthPolicyNames.IsEditorPolicy, IsEditorAuthorizationPolicy},
+        { AuthPolicyNames.IsViewerPolicy, IsViewerAuthorizationPolicy},
+        { AuthPolicyNames.IsAdminAreaPolicy, IsAdminAreaAuthPolicy},
+    };
 
     public static void AddAppPolicyServices(this IServiceCollection services)
     {
@@ -78,6 +85,19 @@ public static class AppPolicies
         services.AddSingleton<IAuthorizationHandler, RecordEditorAuthorizationHandler>();
         services.AddSingleton<IAuthorizationHandler, RecordManagerAuthorizationHandler>();
         services.AddSingleton<IAuthorizationHandler, RecordOwnerManagerAuthorizationHandler>();
+        services.AddScoped<IAuthorizationHandler, AdminAreaAuthorizationHandler>();
     }
+
+    public static void AddAppAuthServices(this IServiceCollection services)
+    {
+        services.AddAuthorizationCore(config =>
+        {
+            foreach (var policy in AppPolicies.Policies)
+            {
+                config.AddPolicy(policy.Key, policy.Value);
+            }
+        });
+    }
+
 }
 
