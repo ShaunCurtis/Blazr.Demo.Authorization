@@ -35,11 +35,9 @@
 </span>
 
 @code {
+    [CascadingParameter] private Task<AuthenticationState> authTask { get; set; } = default!;
 
-    [CascadingParameter] private Task<AuthenticationState>? authTask { get; set; }
-    private Task<AuthenticationState> AuthTask => authTask!;
-
-    [Inject] private AuthenticationStateProvider? authState { get; set; }
+    [Inject] private AuthenticationStateProvider authState { get; set; } = default!;
     private VerySimpleAuthenticationStateProvider AuthState => (VerySimpleAuthenticationStateProvider)authState!;
 
     private ClaimsPrincipal user = new ClaimsPrincipal();
@@ -47,9 +45,10 @@
 
     protected async override Task OnInitializedAsync()
     {
-        var authState = await AuthTask;
-        this.user = authState.User;
-        AuthState.AuthenticationStateChanged += this.OnUserChanged;
+        ArgumentNullException.ThrowIfNull(authTask);
+        var state = await authTask;
+        this.user = state.User;
+        authState.AuthenticationStateChanged += this.OnUserChanged;
     }
 
     private async Task ChangeUser(ChangeEventArgs e)
@@ -62,10 +61,10 @@
     {
         var authState = await state;
         this.user = authState.User;
+        await this.InvokeAsync(this.StateHasChanged);
     }
 
     public void Dispose()
-        => AuthState.AuthenticationStateChanged -= this.OnUserChanged;
-
-    }
+        => authState.AuthenticationStateChanged -= this.OnUserChanged;
+}
 
