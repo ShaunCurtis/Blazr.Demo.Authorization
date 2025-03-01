@@ -1,0 +1,101 @@
+﻿@*/// ============================================================
+    /// Author: Shaun Curtis, Cold Elm Coders
+    /// License: Use And Donate
+    /// If you use it, donate something to a charity somewhere
+    /// ============================================================*@
+
+@implements IDisposable
+@namespace Blazr.App.Web.Server
+@using System.Security.Claims
+
+<span class="me-2">Change User:</span>
+<div class="w-25">
+    <select id="userselect" class="form-control" @onchange="ChangeUser">
+        @foreach (var value in TestIdentities.GetTestIdentities())
+        {
+            @if (value == _currentUserName)
+            {
+                <option value="@value" selected>@value</option>
+            }
+            else
+            {
+                <option value="@value">@value</option>
+            }
+        }
+    </select>
+</div>
+<span class="text-nowrap ms-3">
+    <AuthorizeView>
+        <Authorized>
+            Hello, @(this.user.Identity?.Name ?? string.Empty)
+        </Authorized>
+        <NotAuthorized>
+            Not Logged In
+        </NotAuthorized>
+    </AuthorizeView>
+</span>
+
+@code {
+    [CascadingParameter] private Task<AuthenticationState> authTask { get; set; } = default!;
+
+    [Inject] private ProtectedSessionStorage sessionStore { get; set; } = default!;
+
+    [Inject] private AuthenticationStateProvider authState { get; set; } = default!;
+
+    private VerySimpleAuthenticationStateProvider AuthState => (VerySimpleAuthenticationStateProvider)authState!;
+
+    private ClaimsPrincipal user = new ClaimsPrincipal();
+    private string _currentUserName = "None";
+
+    protected async override Task OnInitializedAsync()
+    {
+        ArgumentNullException.ThrowIfNull(authTask);
+        var state = await authTask;
+        this.user = state.User;
+        authState.AuthenticationStateChanged += this.OnUserChanged;
+    }
+
+    private async Task ChangeUser(ChangeEventArgs e)
+    {
+        var state = await AuthState.ChangeIdentityAsync(e.Value?.ToString() ?? string.Empty);
+        var token = state.User.GetIdentityId();
+        await this.SetStateAsync(token);
+    }
+
+    private async void OnUserChanged(Task<AuthenticationState> state)
+    {
+        await this.GetUser(state);
+    }
+
+    private async Task GetUser(Task<AuthenticationState> state)
+    {
+        var authState = await state;
+        this.user = authState.User;
+        _currentUserName = this.user.GetIdentityName();
+        await this.InvokeAsync(this.StateHasChanged);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await this.LoadStateAsync();
+    }
+
+    private async Task LoadStateAsync()
+    {
+        var result = await sessionStore.GetAsync<Guid>("AuthToken");
+        Guid token  = result.Success ? result.Value : Guid.Empty;
+        await AuthState.ChangeIdentityAsync(token);
+    }
+
+    private async Task SetStateAsync(Guid token)
+    {
+        await sessionStore.SetAsync("AuthToken", token);
+    }
+
+    public void Dispose()
+    {
+        authState.AuthenticationStateChanged -= this.OnUserChanged;
+    }
+}
+

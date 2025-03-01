@@ -1,0 +1,20 @@
+﻿@namespace Blazr.App.UI
+@implements IDisposable
+@inject WeatherForecastViewService weatherForecastViewService
+
+@if (weatherForecastViewService!.Records != null)
+{
+    <h1>Weather Forecast Records</h1>
+    <h3>Count: @weatherForecastViewService!.Records.Count</h3>
+}
+
+@code {
+    protected override void OnInitialized()
+        => weatherForecastViewService!.ListChanged += this.OnListChanged;
+
+    private void OnListChanged(object? sender, EventArgs e)
+        => this.StateHasChanged();
+
+    public void Dispose()
+        => weatherForecastViewService!.ListChanged -= this.OnListChanged;
+}
