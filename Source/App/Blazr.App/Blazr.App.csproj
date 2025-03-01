@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Auth\Domain\VerySimpleAuthenticationStateProvider.cs~RF39fa3b73.TMP" />
     <None Remove="_Imports.razor~RF398cb3e6.TMP" />
   </ItemGroup>
 
