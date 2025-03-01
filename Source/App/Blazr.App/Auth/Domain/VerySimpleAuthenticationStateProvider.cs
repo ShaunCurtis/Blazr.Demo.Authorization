@@ -12,7 +12,9 @@ public class VerySimpleAuthenticationStateProvider : AuthenticationStateProvider
     ClaimsPrincipal? _user;
 
     public override Task<AuthenticationState> GetAuthenticationStateAsync()
-        => Task.FromResult(new AuthenticationState(_user ?? new ClaimsPrincipal()));
+    { 
+        return Task.FromResult(new AuthenticationState(_user ?? new ClaimsPrincipal()));
+    }
 
     public Task<AuthenticationState> ChangeIdentityAsync(string username)
     {

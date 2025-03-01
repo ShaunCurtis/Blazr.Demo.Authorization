@@ -18,6 +18,7 @@ public static class TestIdentities
 
         return new ClaimsIdentity(identity.Claims, Provider);
     }
+    
     public static ClaimsIdentity GetIdentity(Guid token)
     {
         var identity = identities.FirstOrDefault(item => item.Id == token);
